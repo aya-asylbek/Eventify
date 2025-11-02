@@ -138,11 +138,26 @@ npm start
 Easily share or restore your PostgreSQL database with a dump file.
 
 ### 🔹 Import Database (Restore Dump)
-```bash
-createdb eventify_db
-psql -U aichurekasylbek -d eventify_db -f eventify_dump.sql
 ```
-💡 You can place the dump inside /server/database/ for easy setup.
+createdb eventify_db
+psql -U aichurekasylbek -d eventify_db -f eventify_dump_hashed.sql
+```
+💡 Tip: You can place the dump file inside /server/database/ for easier setup.
+This version (eventify_dump_hashed.sql) already includes hashed passwords,
+so authentication will work immediately after import.
+
+### 👩‍💻 Test User Accounts
+
+Use these demo credentials to log in and explore the app:
+
+| Role      | Email                                           | Password |
+| --------- | ----------------------------------------------- | -------- |
+| Organizer | [aya@eventify.com](mailto:aya@eventify.com)     | 123      |
+| Attendee  | [adam@eventify.com](mailto:adam@eventify.com)   | 123      |
+| Admin     | [admin@eventify.com](mailto:admin@eventify.com) | 123      |
+
+
+
 
 ## 🔗 API Endpoints (MVP)
 
