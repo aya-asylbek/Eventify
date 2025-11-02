@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  // checking if token using
+  
+  
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Access denied. No token provided." });
   }
@@ -11,13 +12,27 @@ const authMiddleware = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    // check with my token from env
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // adding v red info
+    req.user = decoded; 
     next();
   } catch (err) {
     res.status(400).json({ error: "Invalid token." });
   }
+};
+
+// check role : organizer, admin, attendee)
+export const verifyRole = (allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "User not authenticated." });
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ error: "Access denied. Insufficient permissions." });
+    }
+
+    next();
+  };
 };
 
 export default authMiddleware;
