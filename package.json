@@ -4,15 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "start": "concurrently \"npm run server\" \"npm run client\"",
-  "server": "cd server && npm run dev",
-  "client": "cd client && npm run dev"
-},
-
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^9.2.1"
+    "bcryptjs": "^3.0.2",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
