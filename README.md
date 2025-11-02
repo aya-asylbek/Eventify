@@ -156,7 +156,7 @@ psql -U aichurekasylbek -d eventify_db -f eventify_dump.sql
 
 ## 🧪 Testing
 
-- **Supertest + Jest** — backend endpoint testing (optional)
+- Vitest — frontend testing
 
 ## 🚀 Future Enhancements (Post-MVP)
 
