@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import pool from "./db.js";
 import authRoutes from "./routes/auth.js";
+import authMiddleware from "./middleware/authMiddleware.js";
 
 dotenv.config();
 const app = express();
@@ -12,6 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.get("/api/protected", authMiddleware, (req, res) => {
+  res.json({ message: `Welcome, user ${req.user.id}!`, role: req.user.role });
+});
 
 // test
 app.get("/", (req, res) => {
