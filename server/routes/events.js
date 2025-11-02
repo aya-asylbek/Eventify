@@ -1,6 +1,7 @@
 import express from "express";
 import pool from "../db.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware, { verifyRole } from "../middleware/authMiddleware.js"; 
+
 
 const router = express.Router();
 
@@ -64,6 +65,22 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     await pool.query("DELETE FROM events WHERE id = $1", [id]);
     res.json({ message: "Event deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Stats for events (organizer or admin)
+router.get("/stats", authMiddleware, verifyRole(["organizer", "admin"]), async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT e.title, COUNT(r.id) AS registrations
+      FROM events e
+      LEFT JOIN registrations r ON e.id = r.event_id
+      GROUP BY e.title
+      ORDER BY registrations DESC;
+    `);
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
