@@ -6,12 +6,16 @@ dotenv.config();
 
 // connect to db
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+   user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
 });
 
-// check connection
+// check
 pool.connect()
-  .then(() => console.log("✅ Connected to PostgreSQL"))
+  .then(() => console.log("✅ Connected to eventify_db"))
   .catch((err) => console.error("❌ Connection error:", err.message));
 
 export default pool;
