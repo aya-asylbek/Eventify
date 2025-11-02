@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict DQv8BOt1hWG35CfVgUEkhF246cCsSrJi58fjckEicQm8MP7gRKcT3iHzhUkN82S
+\restrict xVzZHkVtBQrYasVoDMNSjTYVbOIRIi5pgFkgZbNxx9mqAW9vom1wPyEUzcj5iph
 
 -- Dumped from database version 14.19 (Homebrew)
 -- Dumped by pg_dump version 14.19 (Homebrew)
@@ -186,9 +186,10 @@ COPY public.registrations (id, user_id, event_id, ticket_type, created_at) FROM 
 --
 
 COPY public.users (id, name, email, password, role, created_at) FROM stdin;
-1	Aya Organizer	aya@eventify.com	123	organizer	2025-11-02 13:01:59.388029
-2	Adam Student	adam@eventify.com	123	attendee	2025-11-02 13:01:59.388029
-3	Admin Test	admin@eventify.com	123	admin	2025-11-02 13:01:59.388029
+4	Test User	test@eventify.com	$2b$10$ISEMmdtmK5v5PVp1oeI2GuOWwnKgrk5RU2waDDLHkHTBnRN7.ayty	attendee	2025-11-02 13:48:56.902932
+1	Aya Organizer	aya@eventify.com	$2b$10$y0Y9tVHUWdrgDDGJNSckX.XozbwjQuFExamzJ4bBHiJgpd.OzhJB2	organizer	2025-11-02 13:01:59.388029
+2	Adam Student	adam@eventify.com	$2b$10$HLwTOsd6igd8X2dZ3iloeumi1g0qrdAfjfe3Jlz0jeUp37DVKiNEy	attendee	2025-11-02 13:01:59.388029
+3	Admin Test	admin@eventify.com	$2b$10$jOqNCdMT4wmIyHMNv1Dhr.HjuXLhyxTB9W0XTqchZCQ2qw85YpIoy	admin	2025-11-02 13:01:59.388029
 \.
 
 
@@ -210,7 +211,7 @@ SELECT pg_catalog.setval('public.registrations_id_seq', 3, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: aichurekasylbek
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 3, true);
+SELECT pg_catalog.setval('public.users_id_seq', 4, true);
 
 
 --
@@ -273,5 +274,5 @@ ALTER TABLE ONLY public.registrations
 -- PostgreSQL database dump complete
 --
 
-\unrestrict DQv8BOt1hWG35CfVgUEkhF246cCsSrJi58fjckEicQm8MP7gRKcT3iHzhUkN82S
+\unrestrict xVzZHkVtBQrYasVoDMNSjTYVbOIRIi5pgFkgZbNxx9mqAW9vom1wPyEUzcj5iph
 
