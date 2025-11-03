@@ -1,50 +1,210 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/Dashboard.css";
+
+const API = "http://localhost:5001/api";
 
 const AttendeeDashboard = () => {
   const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState("events");
+  const [events, setEvents] = useState([]);
   const [registrations, setRegistrations] = useState([]);
 
+  // ===== Fetch all events =====
   useEffect(() => {
-    axios.get("http://localhost:5001/api/registrations").then((res) => setRegistrations(res.data));
+    const fetchEvents = async () => {
+      try {
+        const res = await axios.get(`${API}/events`);
+        setEvents(res.data);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+      }
+    };
+    fetchEvents();
   }, []);
 
+  // ===== Fetch attendee's registrations =====
+const fetchRegistrations = async () => {
+  try {
+    const token = user?.token;
+    if (!token) {
+      toast.error("❌ No token found. Please log in again.");
+      return;
+    }
+
+    const res = await axios.get(`${API}/registrations`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setRegistrations(res.data);
+  } catch (err) {
+    console.error("Error fetching registrations:", err.response?.data || err);
+    if (err.response?.status === 401) toast.error("⚠️ Unauthorized. Please log in again.");
+  }
+};
+
+
+  // ===== Register for event =====
+  const handleRegister = async (eventId) => {
+  try {
+    const token = user?.token;
+    if (!token) {
+      toast.error("❌ No token found. Please log in again.");
+      return;
+    }
+
+    await axios.post(
+      `${API}/registrations`,
+      { event_id: eventId },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    toast.success("✅ Successfully registered!");
+    fetchRegistrations();
+  } catch (err) {
+    console.error("Error registering:", err.response?.data || err);
+    toast.error(err.response?.data?.error || "⚠️ Error registering.");
+  }
+};
+
+  // ===== Cancel registration =====
+  const handleCancel = async (registrationId) => {
+    if (!window.confirm("Are you sure you want to cancel this registration?")) return;
+
+    try {
+      await axios.delete(`${API}/registrations/user/${registrationId}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      toast.info("❌ Registration canceled.");
+      fetchRegistrations();
+    } catch (err) {
+      console.error("Error canceling:", err.response?.data || err.message);
+      toast.error("Something went wrong.");
+    }
+  };
+
+  // ===== Check if already registered =====
+  const isRegistered = (eventId) =>
+    registrations.some((r) => r.event_id === eventId);
+
   return (
-    <div className="dashboard">
-      <div className="sidebar">
-        <h2>🎓 Attendee</h2>
+    <div className="admin-dashboard">
+      <ToastContainer position="top-right" autoClose={2500} />
+
+      {/* ==== Header ==== */}
+      <div className="dashboard-header">
+        <h2>👋 Welcome back, {user?.name || "Attendee"}!</h2>
+        <button className="logout" onClick={logout}>
+          Logout
+        </button>
       </div>
 
-      <div className="content">
-        <div className="topbar">
-          <span>{user?.email}</span>
-          <button className="logout" onClick={logout}>
-            Logout
-          </button>
-        </div>
+      {/* ==== Tabs ==== */}
+      <div className="dashboard-tabs">
+        <button
+          className={activeTab === "events" ? "active" : ""}
+          onClick={() => setActiveTab("events")}
+        >
+          All Events
+        </button>
+        <button
+          className={activeTab === "registrations" ? "active" : ""}
+          onClick={() => setActiveTab("registrations")}
+        >
+          My Registrations
+        </button>
+      </div>
 
-        <h3>My Registrations</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Event</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {registrations.map((r) => (
-              <tr key={r.id}>
-                <td>{r.id}</td>
-                <td>{r.event_title}</td>
-                <td>{new Date(r.created_at).toLocaleDateString()}</td>
+      {/* ==== Events Section ==== */}
+      <section
+        className={`fade-section ${
+          activeTab === "events" ? "fade-in" : "fade-out"
+        }`}
+        style={{ display: activeTab === "events" ? "block" : "none" }}
+      >
+        <h3>🎉 Available Events</h3>
+        {events.length === 0 ? (
+          <p>No events available right now.</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Venue</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {events.map((ev) => (
+                <tr key={ev.id}>
+                  <td>{ev.title}</td>
+                  <td>{new Date(ev.date).toLocaleDateString()}</td>
+                  <td>{ev.venue}</td>
+                  <td>
+                    {isRegistered(ev.id) ? (
+                      <button className="registered-btn" disabled>
+                        ✅ Registered
+                      </button>
+                    ) : (
+                      <button
+                        className="register-btn"
+                        onClick={() => handleRegister(ev.id)}
+                      >
+                        Register
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* ==== Registrations Section ==== */}
+      <section
+        className={`fade-section ${
+          activeTab === "registrations" ? "fade-in" : "fade-out"
+        }`}
+        style={{ display: activeTab === "registrations" ? "block" : "none" }}
+      >
+        <h3>🗓️ My Event Registrations</h3>
+        {registrations.length === 0 ? (
+          <p>You haven't registered for any events yet.</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {registrations.map((r) => (
+                <tr key={r.id}>
+                  <td>{r.title}</td>
+                  <td>{new Date(r.date).toLocaleDateString()}</td>
+                  <td>✅ Registered</td>
+                  <td>
+                    <button
+                      className="cancel-btn"
+                      onClick={() => handleCancel(r.id)}
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
     </div>
   );
 };

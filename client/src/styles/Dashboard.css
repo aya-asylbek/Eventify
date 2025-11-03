@@ -1,3 +1,4 @@
+/* ==== Общий контейнер ==== */
 .admin-dashboard {
   font-family: "Inter", sans-serif;
   background-color: #f9fafb;
@@ -11,11 +12,18 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
+
+  /* 🔹 Разделение и аккуратность */
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
 }
 
 .dashboard-header h2 {
   color: #4a3fa6;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .header-right {
@@ -43,6 +51,7 @@
   display: flex;
   justify-content: center;
   gap: 10px;
+  margin-top: 20px;
   margin-bottom: 25px;
 }
 
@@ -65,7 +74,7 @@
   background-color: #333;
 }
 
-/* ==== Content ==== */
+/* ==== Content Box ==== */
 .dashboard-content {
   background: white;
   border: 1px solid #e6e6e6;
@@ -107,4 +116,105 @@ td button {
 
 td button:hover {
   color: #ef4444;
+}
+
+/* ==== Form (Create / Edit) ==== */
+.create-event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.create-event-form input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.create-event-form button {
+  background-color: #7d64c3;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.create-event-form button:hover {
+  background-color: #5e4fa3;
+}
+/* ==== Header ==== */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.logout {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logout:hover {
+  background-color: #b91c1c;
+}
+
+/* ==== Buttons ==== */
+.register-btn {
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.register-btn:hover {
+  background-color: #16a34a;
+}
+
+.registered-btn {
+  background-color: #9ca3af;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.cancel-btn {
+  background-color: #f97316;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cancel-btn:hover {
+  background-color: #ea580c;
+}
+
+/* ==== Fade animation ==== */
+.fade-section {
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
 }

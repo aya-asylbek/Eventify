@@ -3,10 +3,10 @@ import { createContext, useState, useContext, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // save user data
+  const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
 
-  //check if we have user in localstorage
+  // === Load user if exists in localStorage ===
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -14,15 +14,20 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // login save token and user
+  // === LOGIN: save both user and token ===
   const login = (userData, token) => {
-    setUser(userData);
+    // Объединяем userData и token в один объект
+    const userWithToken = { ...userData, token };
+
+    setUser(userWithToken);
     setToken(token);
-    localStorage.setItem("user", JSON.stringify(userData));
+
+    // Сохраняем и юзера, и токен в localStorage
+    localStorage.setItem("user", JSON.stringify(userWithToken));
     localStorage.setItem("token", token);
   };
 
-  // logout 
+  // === LOGOUT ===
   const logout = () => {
     setUser(null);
     setToken(null);
