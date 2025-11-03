@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import QRCode from "qrcode";
 import "../styles/Dashboard.css";
 
 const API = "http://localhost:5001/api";
@@ -12,31 +13,27 @@ const AttendeeDashboard = () => {
   const [activeTab, setActiveTab] = useState("events");
   const [events, setEvents] = useState([]);
   const [registrations, setRegistrations] = useState([]);
+  const [qrCodes, setQrCodes] = useState({});
 
-// ===== Fetch all events =====
-useEffect(() => {
-  const fetchEvents = async () => {
-    try {
-      const token = user?.token;
-      if (!token) {
-        console.warn("⚠️ No token, skipping events fetch");
-        return;
+  // ===== Fetch all events =====
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const token = user?.token;
+        if (!token) return;
+
+        const res = await axios.get(`${API}/events`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setEvents(res.data);
+      } catch (err) {
+        console.error("Error fetching events:", err.response?.data || err);
       }
+    };
 
-      const res = await axios.get(`${API}/events`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      console.log("🎟️ Events fetched:", res.data);
-      setEvents(res.data);
-    } catch (err) {
-      console.error("Error fetching events:", err.response?.data || err);
-    }
-  };
-
-  fetchEvents();
-}, [user]);
-
+    fetchEvents();
+  }, [user]);
 
   // ===== Fetch attendee's registrations =====
   const fetchRegistrations = async () => {
@@ -51,12 +48,24 @@ useEffect(() => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("📦 Registrations data:", res.data);
       setRegistrations(res.data);
+      generateQRCodes(res.data);
     } catch (err) {
       console.error("Error fetching registrations:", err.response?.data || err);
       if (err.response?.status === 401) toast.error("⚠️ Unauthorized. Please log in again.");
     }
+  };
+
+  // ===== Generate QR codes for each registration =====
+  const generateQRCodes = async (data) => {
+    const codes = {};
+    for (const reg of data) {
+      const qrText = `🎫 Event: ${reg.title}\n👤 Attendee: ${user.name}\n🎟️ Ticket: ${reg.ticket_type}\n📅 Date: ${new Date(
+        reg.date
+      ).toLocaleDateString()}`;
+      codes[reg.id] = await QRCode.toDataURL(qrText);
+    }
+    setQrCodes(codes);
   };
 
   // ===== Load registrations when user logs in =====
@@ -87,7 +96,6 @@ useEffect(() => {
       toast.success("✅ Successfully registered!");
       setTimeout(() => fetchRegistrations(), 400);
     } catch (err) {
-      console.error("Error registering:", err.response?.data || err);
       toast.error(err.response?.data?.error || "⚠️ Error registering.");
     }
   };
@@ -103,7 +111,6 @@ useEffect(() => {
       toast.info("❌ Registration canceled.");
       fetchRegistrations();
     } catch (err) {
-      console.error("Error canceling:", err.response?.data || err.message);
       toast.error("Something went wrong.");
     }
   };
@@ -200,6 +207,7 @@ useEffect(() => {
                   <th>Event</th>
                   <th>Date</th>
                   <th>Ticket Type</th>
+                  <th>QR Code</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -209,6 +217,38 @@ useEffect(() => {
                     <td>{r.title}</td>
                     <td>{new Date(r.date).toLocaleDateString()}</td>
                     <td>{r.ticket_type}</td>
+                    <td>
+                      {qrCodes[r.id] ? (
+                        <div style={{ textAlign: "center" }}>
+                          <img
+                            src={qrCodes[r.id]}
+                            alt="QR Code"
+                            style={{
+                              width: "80px",
+                              height: "80px",
+                              border: "1px solid #ddd",
+                              borderRadius: "8px",
+                              padding: "4px",
+                            }}
+                          />
+                          <a
+                            href={qrCodes[r.id]}
+                            download={`ticket_${r.title}.png`}
+                            style={{
+                              display: "block",
+                              fontSize: "0.8rem",
+                              marginTop: "4px",
+                              color: "#4a3fa6",
+                              textDecoration: "underline",
+                            }}
+                          >
+                            Download
+                          </a>
+                        </div>
+                      ) : (
+                        "Loading..."
+                      )}
+                    </td>
                     <td>
                       <button
                         className="cancel-btn"
