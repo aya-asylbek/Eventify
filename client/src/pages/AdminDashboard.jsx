@@ -13,6 +13,18 @@ const AdminDashboard = () => {
   const [events, setEvents] = useState([]);
   const [registrations, setRegistrations] = useState([]);
 
+  // --- edit states ---
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [editEventData, setEditEventData] = useState({
+    title: "",
+    date: "",
+    venue: "",
+  });
+
+  const [editingReg, setEditingReg] = useState(null);
+  const [editRegData, setEditRegData] = useState({ ticket_type: "" });
+
+  // --- Fetch all data ---
   useEffect(() => {
     const token = localStorage.getItem("token");
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -35,6 +47,7 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
+  // --- Delete user ---
   const deleteUser = async (id) => {
     const token = localStorage.getItem("token");
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -49,6 +62,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // --- Delete event ---
   const deleteEvent = async (id) => {
     const token = localStorage.getItem("token");
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -63,13 +77,69 @@ const AdminDashboard = () => {
     }
   };
 
+  // --- Edit event ---
+  const editEvent = (event) => {
+    setEditingEvent(event.id);
+    setEditEventData({
+      title: event.title,
+      date: new Date(event.date).toISOString().split("T")[0],
+      venue: event.venue,
+    });
+  };
+
+  const saveEventEdit = async () => {
+    const token = localStorage.getItem("token");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    try {
+      const res = await axios.put(`${API}/events/${editingEvent}`, editEventData, config);
+      setEvents(events.map((e) => (e.id === editingEvent ? res.data : e)));
+      setEditingEvent(null);
+    } catch (err) {
+      console.error("Error editing event:", err);
+    }
+  };
+
+  // --- Edit registration ---
+  const editRegistration = (reg) => {
+    setEditingReg(reg.id);
+    setEditRegData({ ticket_type: reg.ticket_type });
+  };
+
+  const saveRegEdit = async () => {
+    const token = localStorage.getItem("token");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    try {
+      const res = await axios.put(`${API}/registrations/${editingReg}`, editRegData, config);
+      setRegistrations(
+        registrations.map((r) => (r.id === editingReg ? res.data.registration : r))
+      );
+      setEditingReg(null);
+    } catch (err) {
+      console.error("Error editing registration:", err);
+    }
+  };
+
+  const deleteRegistration = async (id) => {
+    const token = localStorage.getItem("token");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+
+    if (window.confirm("Delete this registration?")) {
+      try {
+        await axios.delete(`${API}/registrations/${id}`, config);
+        setRegistrations(registrations.filter((r) => r.id !== id));
+      } catch (err) {
+        console.error("Error deleting registration:", err);
+      }
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       {/* ==== Header ==== */}
       <div className="dashboard-header">
-        <h2>🎟️ Eventify </h2>
+        <h2>🎟️ Eventify Admin Panel</h2>
         <div className="header-right">
-          <span>{user?.email}</span>
+          <span>Welcome back, Admin!</span>
           <button className="logout" onClick={logout}>
             Logout
           </button>
@@ -78,16 +148,10 @@ const AdminDashboard = () => {
 
       {/* ==== Tabs ==== */}
       <div className="dashboard-tabs">
-        <button
-          onClick={() => setTab("users")}
-          className={tab === "users" ? "active" : ""}
-        >
+        <button onClick={() => setTab("users")} className={tab === "users" ? "active" : ""}>
           Users
         </button>
-        <button
-          onClick={() => setTab("events")}
-          className={tab === "events" ? "active" : ""}
-        >
+        <button onClick={() => setTab("events")} className={tab === "events" ? "active" : ""}>
           Events
         </button>
         <button
@@ -158,12 +222,49 @@ const AdminDashboard = () => {
                   events.map((e) => (
                     <tr key={e.id}>
                       <td>{e.id}</td>
-                      <td>{e.title}</td>
-                      <td>{new Date(e.date).toLocaleDateString()}</td>
-                      <td>{e.venue}</td>
-                      <td>
-                        <button onClick={() => deleteEvent(e.id)}>🗑️</button>
-                      </td>
+                      {editingEvent === e.id ? (
+                        <>
+                          <td>
+                            <input
+                              value={editEventData.title}
+                              onChange={(ev) =>
+                                setEditEventData({ ...editEventData, title: ev.target.value })
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="date"
+                              value={editEventData.date}
+                              onChange={(ev) =>
+                                setEditEventData({ ...editEventData, date: ev.target.value })
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              value={editEventData.venue}
+                              onChange={(ev) =>
+                                setEditEventData({ ...editEventData, venue: ev.target.value })
+                              }
+                            />
+                          </td>
+                          <td>
+                            <button onClick={saveEventEdit}>💾</button>
+                            <button onClick={() => setEditingEvent(null)}>❌</button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td>{e.title}</td>
+                          <td>{new Date(e.date).toLocaleDateString()}</td>
+                          <td>{e.venue}</td>
+                          <td>
+                            <button onClick={() => editEvent(e)}>✏️</button>
+                            <button onClick={() => deleteEvent(e.id)}>🗑️</button>
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))
                 ) : (
@@ -190,6 +291,7 @@ const AdminDashboard = () => {
                   <th>Event</th>
                   <th>Ticket</th>
                   <th>Date</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -199,13 +301,43 @@ const AdminDashboard = () => {
                       <td>{r.id}</td>
                       <td>{r.user}</td>
                       <td>{r.event}</td>
-                      <td>{r.ticket_type}</td>
-                      <td>{new Date(r.created_at).toLocaleDateString()}</td>
+                      {editingReg === r.id ? (
+                        <>
+                          <td>
+                            <select
+                              value={editRegData.ticket_type}
+                              onChange={(e) =>
+                                setEditRegData({ ...editRegData, ticket_type: e.target.value })
+                              }
+                            >
+                              <option value="">Select type</option>
+                              <option value="Regular">Regular</option>
+                              <option value="VIP">VIP</option>
+                              <option value="Student">Student</option>
+                              <option value="Premium">Premium</option>
+                            </select>
+                          </td>
+                          <td>{new Date(r.created_at).toLocaleDateString()}</td>
+                          <td>
+                            <button onClick={saveRegEdit}>💾</button>
+                            <button onClick={() => setEditingReg(null)}>❌</button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td>{r.ticket_type}</td>
+                          <td>{new Date(r.created_at).toLocaleDateString()}</td>
+                          <td>
+                            <button onClick={() => editRegistration(r)}>✏️</button>
+                            <button onClick={() => deleteRegistration(r.id)}>🗑️</button>
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: "center" }}>
+                    <td colSpan="6" style={{ textAlign: "center" }}>
                       No registrations found
                     </td>
                   </tr>
