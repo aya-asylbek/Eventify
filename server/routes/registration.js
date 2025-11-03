@@ -4,14 +4,15 @@ import authMiddleware, { verifyRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Get all registrations for the logged-in user
+// ===== Get all registrations for the logged-in user =====
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT r.id, e.title, e.date, r.ticket_type, r.created_at
+      `SELECT r.id, e.title, e.date, r.ticket_type, r.created_at, r.event_id
        FROM registrations r
        JOIN events e ON r.event_id = e.id
-       WHERE r.user_id = $1`,
+       WHERE r.user_id = $1
+       ORDER BY r.created_at DESC`,
       [req.user.id]
     );
     res.json(result.rows);
@@ -20,7 +21,7 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// Register user for an event (only attendee)
+// ===== Register user for an event (only attendee) =====
 router.post("/", authMiddleware, verifyRole(["attendee"]), async (req, res) => {
   const { event_id, ticket_type } = req.body;
 
@@ -48,7 +49,29 @@ router.post("/", authMiddleware, verifyRole(["attendee"]), async (req, res) => {
   }
 });
 
-// Get all registrations (admin only)
+// ===== Cancel registration (attendee only) =====
+router.delete("/user/:id", authMiddleware, verifyRole(["attendee"]), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Check if this registration belongs to the current user
+    const registration = await pool.query(
+      "SELECT * FROM registrations WHERE id = $1 AND user_id = $2",
+      [id, req.user.id]
+    );
+
+    if (registration.rows.length === 0) {
+      return res.status(403).json({ error: "Not authorized to cancel this registration" });
+    }
+
+    await pool.query("DELETE FROM registrations WHERE id = $1", [id]);
+    res.json({ message: "Registration canceled successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ===== Get all registrations (admin only) =====
 router.get("/all", authMiddleware, verifyRole(["admin"]), async (req, res) => {
   try {
     const result = await pool.query(
@@ -64,7 +87,7 @@ router.get("/all", authMiddleware, verifyRole(["admin"]), async (req, res) => {
   }
 });
 
-// Delete registration (admin)
+// ===== Delete registration (admin only) =====
 router.delete("/:id", authMiddleware, verifyRole(["admin"]), async (req, res) => {
   const { id } = req.params;
   try {

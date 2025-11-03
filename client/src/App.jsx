@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
-import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -14,8 +13,7 @@ function App() {
 
   return (
     <Router>
-      {/* Navbar показываем только если пользователь вошёл и НЕ admin */}
-      {user && user.role !== "admin" && <Navbar />}
+      {/* 🔹 Navbar временно отключён */}
 
       <Routes>
         {/* 🔹 Главная */}
