@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import AnalyticsDashboard from "./AnalyticsDashboard";
 import "../styles/Dashboard.css";
 
 const API = "http://localhost:5001/api";
@@ -160,10 +161,18 @@ const AdminDashboard = () => {
         >
           Registrations
         </button>
+        <button
+          onClick={() => setTab("analytics")}
+          className={tab === "analytics" ? "active" : ""}
+        >
+          Analytics
+        </button>
       </div>
 
       {/* ==== Content ==== */}
       <div className="dashboard-content">
+        {tab === "analytics" && <AnalyticsDashboard />}
+
         {/* USERS */}
         {tab === "users" && (
           <>

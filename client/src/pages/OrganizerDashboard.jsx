@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import AnalyticsDashboard from "./AnalyticsDashboard";
+
 import "../styles/Dashboard.css";
 
 const API = "http://localhost:5001/api";
@@ -145,6 +147,13 @@ const OrganizerDashboard = () => {
         <button onClick={() => setTab("stats")} className={tab === "stats" ? "active" : ""}>
           Event Stats
         </button>
+        <button
+          onClick={() => setTab("analytics")}
+          className={tab === "analytics" ? "active" : ""}
+        >
+          Analytics
+        </button>
+
         <button
           onClick={() => {
             setTab("details");
@@ -361,9 +370,13 @@ const OrganizerDashboard = () => {
             )}
           </>
         )}
+
+        {/* === ANALYTICS === */}
+        {tab === "analytics" && <AnalyticsDashboard />}
       </div>
     </div>
   );
 };
 
 export default OrganizerDashboard;
+
