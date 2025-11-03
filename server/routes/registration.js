@@ -7,16 +7,28 @@ const router = express.Router();
 // ===== Get all registrations for the logged-in user =====
 router.get("/", authMiddleware, async (req, res) => {
   try {
+    console.log("📥 Fetching registrations for user:", req.user.id);
+
     const result = await pool.query(
-      `SELECT r.id, e.title, e.date, r.ticket_type, r.created_at, r.event_id
+      `SELECT 
+         r.id, 
+         e.title, 
+         e.date, 
+         e.venue,
+         r.ticket_type, 
+         r.created_at, 
+         r.event_id
        FROM registrations r
-       JOIN events e ON r.event_id = e.id
+       LEFT JOIN events e ON r.event_id = e.id
        WHERE r.user_id = $1
        ORDER BY r.created_at DESC`,
       [req.user.id]
     );
+
+    console.log("✅ Found registrations:", result.rows);
     res.json(result.rows);
   } catch (err) {
+    console.error("❌ Database error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -26,12 +38,16 @@ router.post("/", authMiddleware, verifyRole(["attendee"]), async (req, res) => {
   const { event_id, ticket_type } = req.body;
 
   try {
+    console.log("🟢 Registration attempt:", { user: req.user.id, event_id });
+
     // Check if already registered
     const existing = await pool.query(
       "SELECT * FROM registrations WHERE user_id = $1 AND event_id = $2",
       [req.user.id, event_id]
     );
+
     if (existing.rows.length > 0) {
+      console.log("⚠️ Already registered");
       return res.status(400).json({ error: "Already registered for this event" });
     }
 
@@ -43,8 +59,10 @@ router.post("/", authMiddleware, verifyRole(["attendee"]), async (req, res) => {
       [req.user.id, event_id, ticket_type || "Regular"]
     );
 
+    console.log("✅ Registration successful:", result.rows[0]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error("❌ Registration error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -54,7 +72,6 @@ router.delete("/user/:id", authMiddleware, verifyRole(["attendee"]), async (req,
   const { id } = req.params;
 
   try {
-    // Check if this registration belongs to the current user
     const registration = await pool.query(
       "SELECT * FROM registrations WHERE id = $1 AND user_id = $2",
       [id, req.user.id]
@@ -67,6 +84,7 @@ router.delete("/user/:id", authMiddleware, verifyRole(["attendee"]), async (req,
     await pool.query("DELETE FROM registrations WHERE id = $1", [id]);
     res.json({ message: "Registration canceled successfully" });
   } catch (err) {
+    console.error("❌ Cancel error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -75,7 +93,12 @@ router.delete("/user/:id", authMiddleware, verifyRole(["attendee"]), async (req,
 router.get("/all", authMiddleware, verifyRole(["admin"]), async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT r.id, u.name AS user, e.title AS event, r.ticket_type, r.created_at
+      `SELECT 
+         r.id, 
+         u.name AS user, 
+         e.title AS event, 
+         r.ticket_type, 
+         r.created_at
        FROM registrations r
        JOIN users u ON r.user_id = u.id
        JOIN events e ON r.event_id = e.id
@@ -83,6 +106,7 @@ router.get("/all", authMiddleware, verifyRole(["admin"]), async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
+    console.error("❌ Admin fetch error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -94,6 +118,7 @@ router.delete("/:id", authMiddleware, verifyRole(["admin"]), async (req, res) =>
     await pool.query("DELETE FROM registrations WHERE id = $1", [id]);
     res.json({ message: "Registration deleted successfully" });
   } catch (err) {
+    console.error("❌ Admin delete error:", err);
     res.status(500).json({ error: err.message });
   }
 });
