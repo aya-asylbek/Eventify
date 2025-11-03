@@ -3,6 +3,10 @@ import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import AdminDashboard from "./pages/AdminDashboard";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import AttendeeDashboard from "./pages/AttendeeDashboard";
+
 import "./App.css";
 
 function App() {
@@ -10,12 +14,67 @@ function App() {
 
   return (
     <Router>
-      {user && <Navbar />}
+      {/* Navbar показываем только если пользователь вошёл и НЕ admin */}
+      {user && user.role !== "admin" && <Navbar />}
 
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} /> {/* i added to see login page */}
+        {/* 🔹 Главная */}
+        <Route
+          path="/"
+          element={
+            user ? (
+              user.role === "admin" ? (
+                <Navigate to="/admin/dashboard" />
+              ) : user.role === "organizer" ? (
+                <Navigate to="/organizer/dashboard" />
+              ) : (
+                <Navigate to="/attendee/dashboard" />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* 🔹 Login & Register */}
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> 
+        <Route path="/register" element={<Register />} />
+
+        {/* 🔹 Admin Dashboard */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            user && user.role === "admin" ? (
+              <AdminDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* 🔹 Organizer Dashboard */}
+        <Route
+          path="/organizer/dashboard"
+          element={
+            user && user.role === "organizer" ? (
+              <OrganizerDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* 🔹 Attendee Dashboard */}
+        <Route
+          path="/attendee/dashboard"
+          element={
+            user && user.role === "attendee" ? (
+              <AttendeeDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
       </Routes>
     </Router>
   );
