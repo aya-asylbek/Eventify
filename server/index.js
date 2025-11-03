@@ -7,6 +7,8 @@ import authRoutes from "./routes/auth.js";
 import authMiddleware from "./middleware/authMiddleware.js";
 import eventRoutes from "./routes/events.js";
 import registrationRoutes from "./routes/registration.js";
+import userRoutes from "./routes/user.js";
+
 
 dotenv.config();
 const app = express();
@@ -20,6 +22,8 @@ app.get("/api/protected", authMiddleware, (req, res) => {
 });
 app.use("/api/events", eventRoutes);
 app.use("/api/registrations", registrationRoutes);
+app.use("/api/users", userRoutes);
+
 
 // test
 app.get("/", (req, res) => {
