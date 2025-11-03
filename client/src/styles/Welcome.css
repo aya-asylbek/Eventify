@@ -1,0 +1,37 @@
+.welcome-container {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.welcome-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.welcome-container p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.welcome-buttons .btn {
+  display: inline-block;
+  margin: 0 10px;
+  padding: 10px 20px;
+  background-color: #0077ff;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.welcome-buttons .btn:hover {
+  background-color: #005fcc;
+}
+
+.btn-secondary {
+  background-color: #00b894;
+}
+
+.btn-secondary:hover {
+  background-color: #009e80;
+}
