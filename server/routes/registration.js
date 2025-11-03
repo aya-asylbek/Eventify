@@ -153,7 +153,50 @@ router.get(
     }
   }
 );
+// ===== Update registration (admin only) =====
+router.put("/:id", authMiddleware, verifyRole(["admin"]), async (req, res) => {
+  const { id } = req.params;
+  const { ticket_type } = req.body;
 
+  try {
+   
+    const check = await pool.query("SELECT * FROM registrations WHERE id = $1", [id]);
+    if (check.rows.length === 0) {
+      return res.status(404).json({ message: "Registration not found" });
+    }
 
+    
+    await pool.query(
+      `UPDATE registrations
+       SET ticket_type = $1
+       WHERE id = $2`,
+      [ticket_type, id]
+    );
+
+    // get data with name event ticket typr
+    const fullData = await pool.query(
+      `SELECT 
+         r.id,
+         u.name AS user,
+         e.title AS event,
+         r.ticket_type,
+         r.created_at
+       FROM registrations r
+       JOIN users u ON r.user_id = u.id
+       JOIN events e ON r.event_id = e.id
+       WHERE r.id = $1`,
+      [id]
+    );
+
+    console.log("✅ Registration updated:", fullData.rows[0]);
+    res.json({
+      message: "Registration updated successfully",
+      registration: fullData.rows[0],
+    });
+  } catch (err) {
+    console.error("❌ Error updating registration:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export default router;
