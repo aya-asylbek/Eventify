@@ -13,18 +13,30 @@ const AttendeeDashboard = () => {
   const [events, setEvents] = useState([]);
   const [registrations, setRegistrations] = useState([]);
 
-  // ===== Fetch all events =====
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await axios.get(`${API}/events`);
-        setEvents(res.data);
-      } catch (err) {
-        console.error("Error fetching events:", err);
+// ===== Fetch all events =====
+useEffect(() => {
+  const fetchEvents = async () => {
+    try {
+      const token = user?.token;
+      if (!token) {
+        console.warn("⚠️ No token, skipping events fetch");
+        return;
       }
-    };
-    fetchEvents();
-  }, []);
+
+      const res = await axios.get(`${API}/events`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("🎟️ Events fetched:", res.data);
+      setEvents(res.data);
+    } catch (err) {
+      console.error("Error fetching events:", err.response?.data || err);
+    }
+  };
+
+  fetchEvents();
+}, [user]);
+
 
   // ===== Fetch attendee's registrations =====
   const fetchRegistrations = async () => {

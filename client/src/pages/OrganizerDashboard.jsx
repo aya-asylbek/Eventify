@@ -10,6 +10,7 @@ const OrganizerDashboard = () => {
   const [tab, setTab] = useState("events");
   const [events, setEvents] = useState([]);
   const [stats, setStats] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -39,6 +40,19 @@ const OrganizerDashboard = () => {
     fetchData();
   }, []);
 
+  // === FETCH REGISTRATIONS FOR ORGANIZER ===
+  const fetchRegistrations = async () => {
+    try {
+      const token = user?.token;
+      const res = await axios.get(`${API}/registrations/organizer`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRegistrations(res.data);
+    } catch (err) {
+      console.error("Error fetching registrations:", err);
+    }
+  };
+
   // === HANDLE INPUT CHANGES ===
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,7 +66,7 @@ const OrganizerDashboard = () => {
 
     try {
       const res = await axios.post(`${API}/events`, formData, config);
-      alert("Event created!");
+      alert("✅ Event created!");
       setEvents([...events, res.data]);
       setFormData({ title: "", description: "", date: "", venue: "", capacity: "" });
       setTab("events");
@@ -97,7 +111,7 @@ const OrganizerDashboard = () => {
 
     try {
       const res = await axios.put(`${API}/events/${editId}`, formData, config);
-      alert("Event updated!");
+      alert("✅ Event updated!");
       setEvents(events.map((e) => (e.id === editId ? res.data : e)));
       setEditId(null);
       setFormData({ title: "", description: "", date: "", venue: "", capacity: "" });
@@ -131,6 +145,15 @@ const OrganizerDashboard = () => {
         <button onClick={() => setTab("stats")} className={tab === "stats" ? "active" : ""}>
           Event Stats
         </button>
+        <button
+          onClick={() => {
+            setTab("details");
+            fetchRegistrations();
+          }}
+          className={tab === "details" ? "active" : ""}
+        >
+          Registration Details
+        </button>
       </div>
 
       {/* CONTENT */}
@@ -150,7 +173,7 @@ const OrganizerDashboard = () => {
                   <th>Title</th>
                   <th>Date</th>
                   <th>Venue</th>
-                  <th>Capacity</th> {/* ✅ добавлено */}
+                  <th>Capacity</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -186,11 +209,43 @@ const OrganizerDashboard = () => {
           <>
             <h3>Create New Event</h3>
             <form onSubmit={handleCreate} className="create-event-form">
-              <input type="text" name="title" placeholder="Event Title" value={formData.title} onChange={handleChange} required />
-              <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
-              <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-              <input type="text" name="venue" placeholder="Venue" value={formData.venue} onChange={handleChange} required />
-              <input type="number" name="capacity" placeholder="Capacity" value={formData.capacity} onChange={handleChange} />
+              <input
+                type="text"
+                name="title"
+                placeholder="Event Title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                value={formData.description}
+                onChange={handleChange}
+              />
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="venue"
+                placeholder="Venue"
+                value={formData.venue}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="number"
+                name="capacity"
+                placeholder="Capacity"
+                value={formData.capacity}
+                onChange={handleChange}
+              />
               <button type="submit">Create Event</button>
             </form>
           </>
@@ -201,11 +256,43 @@ const OrganizerDashboard = () => {
           <>
             <h3>Edit Event</h3>
             <form onSubmit={handleUpdate} className="create-event-form">
-              <input type="text" name="title" placeholder="Event Title" value={formData.title} onChange={handleChange} required />
-              <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
-              <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-              <input type="text" name="venue" placeholder="Venue" value={formData.venue} onChange={handleChange} required />
-              <input type="number" name="capacity" placeholder="Capacity" value={formData.capacity} onChange={handleChange} />
+              <input
+                type="text"
+                name="title"
+                placeholder="Event Title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                value={formData.description}
+                onChange={handleChange}
+              />
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="venue"
+                placeholder="Venue"
+                value={formData.venue}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="number"
+                name="capacity"
+                placeholder="Capacity"
+                value={formData.capacity}
+                onChange={handleChange}
+              />
               <button type="submit">Update Event</button>
             </form>
           </>
@@ -239,6 +326,39 @@ const OrganizerDashboard = () => {
                 )}
               </tbody>
             </table>
+          </>
+        )}
+
+        {/* === REGISTRATION DETAILS === */}
+        {tab === "details" && (
+          <>
+            <h3>👥 Registration Details</h3>
+            {registrations.length === 0 ? (
+              <p>No registrations found yet.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Attendee</th>
+                    <th>Email</th>
+                    <th>Ticket Type</th>
+                    <th>Registered At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {registrations.map((r, i) => (
+                    <tr key={i}>
+                      <td>{r.event}</td>
+                      <td>{r.attendee}</td>
+                      <td>{r.email}</td>
+                      <td>{r.ticket_type}</td>
+                      <td>{new Date(r.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </>
         )}
       </div>
