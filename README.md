@@ -173,6 +173,29 @@ Use these demo credentials to log in and explore the app:
 
 - Vitest — frontend testing
 
+##🌟 Core Completed Features
+
+🔐 JWT Authentication — secure login, registration, and logout with role-based access
+
+👥 User Roles — attendee, organizer, and admin
+
+🎟️ Attendee Dashboard — view events, register, cancel, and see your registrations
+
+🧑‍🏫 Organizer Dashboard — create, edit, and manage your own events
+
+🧑‍💼 Admin Dashboard — manage all users, events, and registrations across the platform
+
+🗄️ PostgreSQL Database — structured tables for users, events, and registrations
+
+⚙️ Protected API Routes — fully secured with authMiddleware and verifyRole
+
+🎨 Modern UI — clean dashboard layout with tabs, toasts, and responsive styling
+
+💪 Current Status
+
+✅ MVP Fully Complete — all core features tested and functional
+🚧 Next Phase: advanced analytics, charts, and ticket QR system
+
 ## 🚀 Future Enhancements (Post-MVP)
 
 These features represent the full project scope required by the Hard Skills assignment:
