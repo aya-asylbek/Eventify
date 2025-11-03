@@ -13,6 +13,7 @@ function App() {
       {user && <Navbar />}
 
       <Routes>
+        <Route path="/" element={<Navigate to="/login" />} /> {/* i added to see login page */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} /> 
       </Routes>
