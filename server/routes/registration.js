@@ -123,4 +123,37 @@ router.delete("/:id", authMiddleware, verifyRole(["admin"]), async (req, res) =>
   }
 });
 
+
+// ===== Get all registrations for events created by the logged-in organizer =====
+router.get(
+  "/organizer",
+  authMiddleware,
+  verifyRole(["organizer"]),
+  async (req, res) => {
+    try {
+      const result = await pool.query(
+        `SELECT 
+           e.title AS event,
+           u.name AS attendee,
+           u.email,
+           r.ticket_type,
+           r.created_at
+         FROM registrations r
+         JOIN events e ON r.event_id = e.id
+         JOIN users u ON r.user_id = u.id
+         WHERE e.organizer_id = $1
+         ORDER BY e.title, r.created_at DESC`,
+        [req.user.id]
+      );
+
+      res.json(result.rows);
+    } catch (err) {
+      console.error("Error fetching organizer registrations:", err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+
+
 export default router;
