@@ -39,14 +39,14 @@ router.get("/", authMiddleware, async (req, res) => {
 
 // ===== Create new event (organizer or admin) =====
 router.post("/", authMiddleware, verifyRole(["organizer", "admin"]), async (req, res) => {
-  const { title, description, date, venue, capacity } = req.body;
+  const { title, description, date, venue, capacity, price } = req.body;
 
   try {
     const result = await pool.query(
-      `INSERT INTO events (title, description, date, venue, capacity, organizer_id)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO events (title, description, date, venue, capacity,price, organizer_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [title, description, date, venue, capacity, req.user.id]
+      [title, description, date, venue, capacity,price || 0, req.user.id]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -55,10 +55,10 @@ router.post("/", authMiddleware, verifyRole(["organizer", "admin"]), async (req,
   }
 });
 
-// ===== Update event =====
+// ===== Update event (organizer or admin can also edit price) =====
 router.put("/:id", authMiddleware, verifyRole(["organizer", "admin"]), async (req, res) => {
   const { id } = req.params;
-  const { title, description, date, venue, capacity } = req.body;
+  const { title, description, date, venue, capacity, price } = req.body;
 
   try {
     const check = await pool.query("SELECT * FROM events WHERE id = $1", [id]);
@@ -67,16 +67,18 @@ router.put("/:id", authMiddleware, verifyRole(["organizer", "admin"]), async (re
 
     const event = check.rows[0];
 
+    // only organizer can edit their own event
     if (req.user.role === "organizer" && event.organizer_id !== req.user.id) {
       return res.status(403).json({ message: "You can only edit your own events" });
     }
 
+    // update event including price
     const result = await pool.query(
       `UPDATE events
-       SET title=$1, description=$2, date=$3, venue=$4, capacity=$5
-       WHERE id=$6
+       SET title=$1, description=$2, date=$3, venue=$4, capacity=$5, price=$6
+       WHERE id=$7
        RETURNING *`,
-      [title, description, date, venue, capacity, id]
+      [title, description, date, venue, capacity, price || 0, id]
     );
 
     res.json(result.rows[0]);
