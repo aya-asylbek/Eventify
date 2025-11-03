@@ -173,7 +173,7 @@ Use these demo credentials to log in and explore the app:
 
 - Vitest — frontend testing
 
-##🌟 Core Completed Features
+### 🌟 Core Completed Features
 
 🔐 JWT Authentication — secure login, registration, and logout with role-based access
 
