@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import AnalyticsDashboard from "./AnalyticsDashboard";
-
 import "../styles/Dashboard.css";
 
 const API = "http://localhost:5001/api";
@@ -19,6 +18,7 @@ const OrganizerDashboard = () => {
     date: "",
     venue: "",
     capacity: "",
+    price: "", 
   });
   const [editId, setEditId] = useState(null);
 
@@ -70,7 +70,14 @@ const OrganizerDashboard = () => {
       const res = await axios.post(`${API}/events`, formData, config);
       alert("✅ Event created!");
       setEvents([...events, res.data]);
-      setFormData({ title: "", description: "", date: "", venue: "", capacity: "" });
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        venue: "",
+        capacity: "",
+        price: "",
+      });
       setTab("events");
     } catch (err) {
       alert(err.response?.data?.message || "Error creating event");
@@ -101,6 +108,7 @@ const OrganizerDashboard = () => {
       date: event.date.split("T")[0],
       venue: event.venue,
       capacity: event.capacity,
+      price: event.price, // 💰 добавлено
     });
     setTab("edit");
   };
@@ -116,7 +124,14 @@ const OrganizerDashboard = () => {
       alert("✅ Event updated!");
       setEvents(events.map((e) => (e.id === editId ? res.data : e)));
       setEditId(null);
-      setFormData({ title: "", description: "", date: "", venue: "", capacity: "" });
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        venue: "",
+        capacity: "",
+        price: "",
+      });
       setTab("events");
     } catch (err) {
       alert(err.response?.data?.message || "Error updating event");
@@ -147,13 +162,9 @@ const OrganizerDashboard = () => {
         <button onClick={() => setTab("stats")} className={tab === "stats" ? "active" : ""}>
           Event Stats
         </button>
-        <button
-          onClick={() => setTab("analytics")}
-          className={tab === "analytics" ? "active" : ""}
-        >
+        <button onClick={() => setTab("analytics")} className={tab === "analytics" ? "active" : ""}>
           Analytics
         </button>
-
         <button
           onClick={() => {
             setTab("details");
@@ -183,6 +194,7 @@ const OrganizerDashboard = () => {
                   <th>Date</th>
                   <th>Venue</th>
                   <th>Capacity</th>
+                  <th>Price ($)</th> {/* 💰 добавлено */}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -195,6 +207,7 @@ const OrganizerDashboard = () => {
                       <td>{new Date(e.date).toLocaleDateString()}</td>
                       <td>{e.venue}</td>
                       <td>{e.capacity}</td>
+                      <td>{e.price ? `$${e.price}` : "$0.00"}</td>
                       <td>
                         <button onClick={() => handleEdit(e)}>✏️</button>
                         <button onClick={() => handleDelete(e.id)}>🗑️</button>
@@ -203,7 +216,7 @@ const OrganizerDashboard = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center" }}>
+                    <td colSpan="7" style={{ textAlign: "center" }}>
                       No events found
                     </td>
                   </tr>
@@ -218,43 +231,12 @@ const OrganizerDashboard = () => {
           <>
             <h3>Create New Event</h3>
             <form onSubmit={handleCreate} className="create-event-form">
-              <input
-                type="text"
-                name="title"
-                placeholder="Event Title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleChange}
-              />
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="venue"
-                placeholder="Venue"
-                value={formData.venue}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="number"
-                name="capacity"
-                placeholder="Capacity"
-                value={formData.capacity}
-                onChange={handleChange}
-              />
+              <input type="text" name="title" placeholder="Event Title" value={formData.title} onChange={handleChange} required />
+              <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
+              <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+              <input type="text" name="venue" placeholder="Venue" value={formData.venue} onChange={handleChange} required />
+              <input type="number" name="capacity" placeholder="Capacity" value={formData.capacity} onChange={handleChange} />
+              <input type="number" name="price" placeholder="Ticket Price ($)" value={formData.price} onChange={handleChange} step="0.01" min="0" />
               <button type="submit">Create Event</button>
             </form>
           </>
@@ -265,43 +247,12 @@ const OrganizerDashboard = () => {
           <>
             <h3>Edit Event</h3>
             <form onSubmit={handleUpdate} className="create-event-form">
-              <input
-                type="text"
-                name="title"
-                placeholder="Event Title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleChange}
-              />
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="venue"
-                placeholder="Venue"
-                value={formData.venue}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="number"
-                name="capacity"
-                placeholder="Capacity"
-                value={formData.capacity}
-                onChange={handleChange}
-              />
+              <input type="text" name="title" placeholder="Event Title" value={formData.title} onChange={handleChange} required />
+              <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
+              <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+              <input type="text" name="venue" placeholder="Venue" value={formData.venue} onChange={handleChange} required />
+              <input type="number" name="capacity" placeholder="Capacity" value={formData.capacity} onChange={handleChange} />
+              <input type="number" name="price" placeholder="Ticket Price ($)" value={formData.price} onChange={handleChange} step="0.01" min="0" />
               <button type="submit">Update Event</button>
             </form>
           </>
@@ -379,4 +330,3 @@ const OrganizerDashboard = () => {
 };
 
 export default OrganizerDashboard;
-
