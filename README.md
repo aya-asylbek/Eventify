@@ -113,6 +113,13 @@ npm install
 cd server && npm install
 cd ../client && npm install
 ```
+he project will run two servers:
+
+Frontend (React) → http://localhost:5173
+
+Backend (Express / Node) → http://localhost:5001
+
+Make sure both are running in your terminal — one for the client and one for the server.
 
 ### 3️⃣ Create .env in /server
 
