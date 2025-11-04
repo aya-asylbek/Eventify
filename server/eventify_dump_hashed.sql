@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict UKm4MEtlH8Dh8tqDgTTDdcS3uOPjrehJcAMLUVhLENYq5FOexMdrkdkiv0umTlJ
+\restrict vZuBOTnkwVk9cDe5Fp8vagmGBbuZk5oPGNk8g3r44n9AC2ckc2NXaHQLdMwOafi
 
 -- Dumped from database version 14.19 (Homebrew)
 -- Dumped by pg_dump version 14.19 (Homebrew)
@@ -35,7 +35,8 @@ CREATE TABLE public.events (
     capacity integer DEFAULT 0,
     created_by integer,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    organizer_id integer
+    organizer_id integer,
+    price numeric(10,2) DEFAULT 0
 );
 
 
@@ -164,14 +165,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: aichurekasylbek
 --
 
-COPY public.events (id, title, description, date, venue, capacity, created_by, created_at, organizer_id) FROM stdin;
-1	Tech Talk	Mini meetup about web development	2025-11-05	Sunnyvale Center	30	1	2025-11-02 13:02:05.777999	1
-4	React Meetup	Learn React basics	2025-11-20	Techtonica Lab	50	1	2025-11-02 15:11:03.931803	1
-5	Techtonica Meet Up	All graduates let's connect in San Jose!	2025-11-29	San Jose City Hall	10	1	2025-11-03 00:32:19.996369	1
-3	Yoga Class	Morning yoga session for beginners	2025-11-22	Community Gym	15	1	2025-11-02 13:02:05.777999	1
-2	Music Party	Fun music and games	2025-11-08	Downtown Hall	53	1	2025-11-02 13:02:05.777999	1
-6	Doordash event	delivery food	2025-11-22	San Jose	10	9	2025-11-03 12:06:35.441419	\N
-7	Uber Delivery meet up	Meet up	2025-11-14	SAn Jose Downtown	10	\N	2025-11-03 12:23:53.693181	9
+COPY public.events (id, title, description, date, venue, capacity, created_by, created_at, organizer_id, price) FROM stdin;
+5	Techtonica Meet Up	All graduates let's connect in San Jose!	2025-11-29	San Jose City Hall	10	1	2025-11-03 00:32:19.996369	1	20.00
+2	Music Party	Fun music and games	2025-11-08	Downtown Hall	53	1	2025-11-02 13:02:05.777999	1	12.00
+6	Doordash event	delivery food	2025-11-22	San Jose	10	9	2025-11-03 12:06:35.441419	\N	10.00
+7	Uber Delivery meet up	Meet up	2025-11-14	SAn Jose Downtown	10	\N	2025-11-03 12:23:53.693181	9	8.00
+1	Tech Talk	\N	2025-11-05	Sunnyvale Downtown 	\N	1	2025-11-02 13:02:05.777999	1	10.00
+3	Yoga Class	\N	2025-11-22	Community Gym	\N	1	2025-11-02 13:02:05.777999	1	5.00
+4	React Meetup	Learn React basics	2025-11-20	Techtonica Lab	50	1	2025-11-02 15:11:03.931803	1	15.00
 \.
 
 
@@ -198,7 +199,7 @@ COPY public.registrations (id, user_id, event_id, ticket_type, created_at) FROM 
 38	7	7	Regular	2025-11-03 12:50:42.480692
 39	7	4	Regular	2025-11-03 12:50:43.151009
 40	7	3	Regular	2025-11-03 12:50:44.366991
-41	7	5	Regular	2025-11-03 12:50:45.802591
+41	7	5	Premium	2025-11-03 12:50:45.802591
 \.
 
 
@@ -305,5 +306,5 @@ ALTER TABLE ONLY public.registrations
 -- PostgreSQL database dump complete
 --
 
-\unrestrict UKm4MEtlH8Dh8tqDgTTDdcS3uOPjrehJcAMLUVhLENYq5FOexMdrkdkiv0umTlJ
+\unrestrict vZuBOTnkwVk9cDe5Fp8vagmGBbuZk5oPGNk8g3r44n9AC2ckc2NXaHQLdMwOafi
 
