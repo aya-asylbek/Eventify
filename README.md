@@ -153,11 +153,27 @@ Use these demo credentials to log in and explore the app:
 | Role      | Email                                           | Password |
 | --------- | ----------------------------------------------- | -------- |
 | Organizer | [aya@eventify.com](mailto:aya@eventify.com)     | 123      |
-| Attendee  | [adam@eventify.com](mailto:adam@eventify.com)   | 123      |
+| Attendee  | [sam@eventify.com](mailto:sam@eventify.com)     | 1234      |
 | Admin     | [admin@eventify.com](mailto:admin@eventify.com) | 123      |
 
+### Organizer 
+login <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 18 57 PM" src="https://github.com/user-attachments/assets/b1f21698-861b-4c1e-8bf3-62c0118c1a08" />
+Dashboard <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 20 06 PM" src="https://github.com/user-attachments/assets/1318e87b-ce5b-4843-8dc4-aa6dd901951b" />
+Create event <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 20 32 PM" src="https://github.com/user-attachments/assets/39c90caa-ba69-411b-8c10-1d5f1e574ca8" />
+Analytics <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 20 32 PM" src="https://github.com/user-attachments/assets/c5853dd9-bedf-4517-8b48-633729380b4e" />
+Registartion details <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 20 32 PM" src="https://github.com/user-attachments/assets/3d58cda1-d3e8-46eb-822c-2a9e5632643c" />
+### Attendee 
+Dashboard <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 23 32 PM" src="https://github.com/user-attachments/assets/aeb7d254-c52e-4870-9d03-5b0bdcbb18a2" />
+Resitrations with qr code <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 24 10 PM" src="https://github.com/user-attachments/assets/41d4bfc7-c45b-4f17-abfe-7f0cbc25bdcb" />
+### Admin 
+Dashboard <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 25 47 PM" src="https://github.com/user-attachments/assets/89209407-557c-4824-b5fd-6a531c31fc2a" />
+Events <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 26 18 PM" src="https://github.com/user-attachments/assets/9226dbda-19ae-4b74-a1a8-a28480fa70a1" />
+Registrations <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 26 48 PM" src="https://github.com/user-attachments/assets/6b9adb41-4a02-4ead-a296-adf2ba52bac4" />
+Analytics <img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 27 21 PM" src="https://github.com/user-attachments/assets/8a1b8d76-a995-492d-ab5f-fe96fb19e85a" />
 
-
+### Registration page
+<img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 28 02 PM" src="https://github.com/user-attachments/assets/9b51dd96-a4df-4a45-8db3-12d7c8ad537a" />
+<img width="1440" height="900" alt="Screen Shot 2025-11-03 at 4 28 38 PM" src="https://github.com/user-attachments/assets/6a42322a-66c9-410e-b09d-fca6b2b99d7b" />
 
 ## 🔗 API Endpoints (MVP)
 
@@ -172,45 +188,6 @@ Use these demo credentials to log in and explore the app:
 ## 🧪 Testing
 
 - Vitest — frontend testing
-
-### 🌟 Core Completed Features
-
-🔐 JWT Authentication — secure login, registration, and logout with role-based access
-
-👥 User Roles — attendee, organizer, and admin
-
-🎟️ Attendee Dashboard — view events, register, cancel, and see your registrations
-
-🧑‍🏫 Organizer Dashboard — create, edit, and manage your own events
-
-🧑‍💼 Admin Dashboard — manage all users, events, and registrations across the platform
-
-🗄️ PostgreSQL Database — structured tables for users, events, and registrations
-
-⚙️ Protected API Routes — fully secured with authMiddleware and verifyRole
-
-🎨 Modern UI — clean dashboard layout with tabs, toasts, and responsive styling
-
-💪 Current Status
-
-✅ MVP Fully Complete — all core features tested and functional
-🚧 Next Phase: advanced analytics, charts, and ticket QR system
-
-## 🚀 Future Enhancements (Post-MVP)
-
-These features represent the full project scope required by the Hard Skills assignment:
-
-- **Multi-Role User System**: Support for organizers, attendees, vendors, and administrators, each with specific dashboards and permissions.
-
-- **Event Creation & Management**: Organizers can add rich event details, ticket types, prices, schedules, venues, and speaker/performer management.
-
-- **Registration & Ticketing System**: Attendees can browse and buy tickets with integrated payment processing and receive QR code tickets.
-
-- **Real-Time Event Updates**: Live notifications for schedule or venue changes, plus support for push notifications and email alerts.
-
-- **Check-In & Attendance Tracking**: QR code scanning for entry, real-time attendance monitoring, and automatic waitlist updates.
-
-- **Analytics & Reporting Dashboard**: Comprehensive analytics for organizers including ticket sales, revenue tracking, feedback analysis, and exportable reports.
 
 ## 🙌 Acknowledgements
 
